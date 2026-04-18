@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-
+import { axiosInstance } from "../utils/axiosInstance";
+import { UserContext } from "../context/userContext";
 const SignUp = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState(null);
+  const { updateUser } = useContext(UserContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -25,19 +26,44 @@ const SignUp = () => {
     }
 
     try {
-      const res = await axios.post("/api/auth/signup", { name, email, password });
-      localStorage.setItem("token", res.data.token);
-      navigate("/dashboard");
-    } catch (err) {
-      setError(err?.response?.data?.message || "Sign up failed. Please try again.");
+      const response = await axiosInstance.post("/auth/register", {
+        name,
+        email,
+        password,
+      });
+
+      const { token, user } = response.data;
+
+      if (token) {
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(user));
+
+        updateUser(user);
+        navigate("/dashboard");
+
+        setName("");
+        setEmail("");
+        setPassword("");
+        setConfirmPassword("");
+      }
+    } catch (error) {
+      if (error.response && error.response.data.message) {
+        setError(error.response.data.message);
+      } else {
+        setError("Sign up failed. Please try again.");
+      }
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-6 py-20">
       <div className="bg-white px-8 py-6 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-2 text-gray-800">Create Account</h2>
-        <p className="text-gray-600 mb-6">Sign up to start tracking your preparations.</p>
+        <h2 className="text-xl md:text-2xl font-bold mb-2 text-gray-800">
+          Create Account
+        </h2>
+        <p className="text-gray-600 mb-6">
+          Sign up to start tracking your preparations.
+        </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -86,7 +112,10 @@ const SignUp = () => {
           </div>
 
           <div>
-            <label htmlFor="confirmPassword" className="block text-gray-700 mb-1">
+            <label
+              htmlFor="confirmPassword"
+              className="block text-gray-700 mb-1"
+            >
               Confirm Password
             </label>
             <input
@@ -100,7 +129,9 @@ const SignUp = () => {
             />
           </div>
 
-          {error && <p className="text-red-500 mt-2 text-sm font-medium">{error}</p>}
+          {error && (
+            <p className="text-red-500 mt-2 text-sm font-medium">{error}</p>
+          )}
 
           <button
             type="submit"
@@ -110,7 +141,12 @@ const SignUp = () => {
           </button>
 
           <p className="text-center mt-4">
-            Already have an account? <Link to="/login"><span className="text-blue-500 cursor-pointer hover:underline">Log in</span></Link>
+            Already have an account?{" "}
+            <Link to="/login">
+              <span className="text-blue-500 cursor-pointer hover:underline">
+                Log in
+              </span>
+            </Link>
           </p>
         </form>
       </div>

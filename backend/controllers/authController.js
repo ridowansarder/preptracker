@@ -6,9 +6,9 @@ const generateToken = (id) => {
 };
 
 export const registerUser = async (req, res) => {
-  const { fullName, email, password } = req.body;
+  const { name, email, password } = req.body;
 
-  if (!fullName || !email || !password) {
+  if (!name || !email || !password) {
     return res
       .status(400)
       .json({ success: false, message: "Please enter all fields" });
@@ -23,7 +23,7 @@ export const registerUser = async (req, res) => {
         .json({ success: false, message: "User already exists" });
     }
 
-    const user = await userModel.create({ fullName, email, password });
+    const user = await userModel.create({ name, email, password });
     const token = generateToken(user._id);
 
     res.status(201).json({
@@ -31,7 +31,7 @@ export const registerUser = async (req, res) => {
       message: "User registered successfully",
       user: {
         id: user._id,
-        fullName: user.fullName,
+        name: user.name,
         email: user.email,
       },
       token,
@@ -66,7 +66,7 @@ export const loginUser = async (req, res) => {
       message: "User logged in successfully",
       user: {
         id: user._id,
-        fullName: user.fullName,
+        name: user.name,
         email: user.email,
       },
       token,

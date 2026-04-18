@@ -24,7 +24,7 @@ app.use(cookieParser());
 connectDB();
 
 app.use("/api/v1/auth", authRoutes)
-app.use("/api/v1/item", itemRoutes)
+app.use("/api/v1/items", itemRoutes)
 app.use("/api/v1/dashboard", dashboardRoutes)
 
 app.listen(port, () => {

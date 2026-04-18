@@ -90,7 +90,7 @@ export const updateItem = async (req, res) => {
         notes,
         status,
       },
-      { new: true, runValidators: true },
+      { returnDocument: "after", runValidators: true },
     );
 
     res.status(200).json({ success: true, item: updateItem });

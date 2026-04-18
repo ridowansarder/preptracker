@@ -1,32 +1,46 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { axiosInstance } from "../utils/axiosInstance";
+import { UserContext } from "../context/userContext";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { updateUser } = useContext(UserContext);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    axios
-      .post("/api/auth/login", { email, password })
-      .then((res) => {
-        localStorage.setItem("token", res.data.token);
-        navigate("/dashboard");
-      })
-      .catch((err) =>
-        setError(
-          err?.response?.data?.message || "Login failed. Please try again.",
-        ),
-      );
-  };
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    const response = await axiosInstance.post("/auth/login", { email, password });
+
+    const { token, user } = response.data;
+
+    if (token) {
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+
+      updateUser(user);
+      navigate("/dashboard");
+
+      setEmail("");
+      setPassword("");
+    }
+  } catch (error) {
+    if (error.response && error.response.data.message) {
+      setError(error.response.data.message);
+    } else {
+      setError("Login failed. Please try again.");
+    }
+  }
+};
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-2 text-gray-800">Welcome Back!</h2>
+        <h2 className="text-xl sm:text-2xl font-bold mb-2 text-gray-800">Welcome Back!</h2>
         <p className="text-gray-600 mb-6">Please log in to your account.</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
