@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { axiosInstance } from "../utils/axiosInstance";
 import { Link } from "react-router-dom";
 
@@ -134,22 +134,33 @@ const Items = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAdd, setShowAdd] = useState(false);
+  const [filters, setFilters] = useState({ status: "", type: "" });
 
-  const fetchItems = async () => {
-    try {
-      const res = await axiosInstance.get("/items");
-      setItems(res.data.items);
-    } catch (err) {
-      console.error(err);
-      setError("Failed to load items.");
-    } finally {
-      setLoading(false);
-    }
+  const fetchItems = useCallback(async (activeFilters = filters) => {
+  try {
+    const params = new URLSearchParams();
+    if (activeFilters.status) params.append("status", activeFilters.status);
+    if (activeFilters.type) params.append("type", activeFilters.type);
+
+    const res = await axiosInstance.get(`/items?${params.toString()}`);
+    setItems(res.data.items);
+  } catch (err) {
+    console.error(err);
+    setError("Failed to load items.");
+  } finally {
+    setLoading(false);
+  }
+}, [filters]);
+
+useEffect(() => {
+  fetchItems();
+}, [fetchItems]);
+
+  const handleFilterChange = (e) => {
+    const updated = { ...filters, [e.target.name]: e.target.value };
+    setFilters(updated);
+    fetchItems(updated);
   };
-
-  useEffect(() => {
-    fetchItems();
-  }, []);
 
   const handleDelete = async (id) => {
     const confirmed = window.confirm(
@@ -193,9 +204,34 @@ const Items = () => {
 
       {/* Items List */}
       <div className="bg-white rounded-xl shadow-sm p-6">
-        <h2 className="text-lg font-semibold mb-4">
-          All Items ({items.length})
-        </h2>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+          <h2 className="text-lg font-semibold">All Items ({items.length})</h2>
+          <div className="flex gap-2">
+            <select
+              name="status"
+              value={filters.status}
+              onChange={handleFilterChange}
+              className="text-xs border rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+            >
+              <option value="">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="completed">Completed</option>
+              <option value="revision">Revision</option>
+            </select>
+
+            <select
+              name="type"
+              value={filters.type}
+              onChange={handleFilterChange}
+              className="text-xs border rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+            >
+              <option value="">All Types</option>
+              <option value="problem">Problem</option>
+              <option value="concept">Concept</option>
+              <option value="question">Question</option>
+            </select>
+          </div>
+        </div>
 
         {items.length === 0 ? (
           <p className="text-gray-500 text-sm">No items yet. Add one above.</p>
@@ -207,7 +243,9 @@ const Items = () => {
                 className="flex flex-col sm:flex-row sm:items-center justify-between border border-gray-200 rounded-lg p-4 gap-3 hover:shadow-sm transition"
               >
                 <Link to={`/items/${item._id}`} className="flex flex-col gap-1">
-                  <p className="font-medium text-gray-800 text-sm">{item.title}</p>
+                  <p className="font-medium text-gray-800 text-sm">
+                    {item.title}
+                  </p>
                   {item.topic && (
                     <p className="text-xs text-gray-400">{item.topic}</p>
                   )}
