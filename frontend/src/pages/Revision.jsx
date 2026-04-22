@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
 import { axiosInstance } from "../utils/axiosInstance";
-
-const typeColors = {
-  problem: "bg-purple-100 text-purple-700",
-  concept: "bg-orange-100 text-orange-700",
-  question: "bg-pink-100 text-pink-700",
-};
+import { Link } from "react-router-dom";
 
 const Revision = () => {
   const [items, setItems] = useState([]);
@@ -49,7 +44,9 @@ const Revision = () => {
 
       {items.length === 0 ? (
         <div className="bg-white rounded-xl shadow-sm p-10 text-center">
-          <p className="text-gray-400 text-sm">No items in revision. You're all caught up!</p>
+          <p className="text-gray-400 text-sm">
+            No items in revision. You're all caught up!
+          </p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -58,18 +55,31 @@ const Revision = () => {
               key={item._id}
               className="bg-white flex flex-col sm:flex-row sm:items-center justify-between border border-gray-200 rounded-xl p-4 gap-3 hover:shadow-sm transition"
             >
-              <div className="flex flex-col gap-1">
-                <p className="font-medium text-gray-800">{item.title}</p>
-                {item.topic && (
-                  <p className="text-xs text-gray-400">{item.topic}</p>
-                )}
-                {item.notes && (
-                  <p className="text-xs text-gray-500 italic">{item.notes}</p>
-                )}
-                <span className={`self-start text-xs px-2 py-0.5 rounded-full font-medium mt-1 ${typeColors[item.type]}`}>
-                  {item.type}
-                </span>
-              </div>
+              <Link to={`/items/${item._id}`} className="flex-1">
+                <div className="flex flex-col gap-1">
+                  <p className="font-medium text-gray-800">{item.title}</p>
+                  {item.topic && (
+                    <p className="text-xs text-gray-400">{item.topic}</p>
+                  )}
+                  {item.notes && (
+                    <p className="text-xs text-gray-500 italic">
+                      {item.notes.slice(0, 50)}
+                      {item.notes.length > 50 ? "..." : ""}
+                    </p>
+                  )}
+                  <span
+                    className={`px-3 py-1 text-xs rounded-full font-medium self-start mt-2 ${
+                      item.type === "problem"
+                        ? "bg-blue-50 text-blue-600"
+                        : item.type === "concept"
+                          ? "bg-purple-50 text-purple-600"
+                          : "bg-green-50 text-green-600"
+                    }`}
+                  >
+                    {item.type}
+                  </span>
+                </div>
+              </Link>
 
               <button
                 onClick={() => handleMarkCompleted(item._id)}

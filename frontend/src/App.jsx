@@ -12,6 +12,7 @@ import Items from "./pages/Items";
 import Revision from "./pages/Revision";
 import { useContext } from "react";
 import { UserContext } from "./context/userContext";
+import ItemDetail from "./pages/ItemDetail";
 
 const ProtectedRoute = ({ children }) => {
   const { user } = useContext(UserContext);
@@ -64,6 +65,7 @@ const App = () => {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/items" element={<Items />} />
             <Route path="/revision" element={<Revision />} />
+            <Route path="/items/:id" element={<ItemDetail />} />
           </Route>
         </Routes>
       </Router>

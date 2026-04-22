@@ -22,7 +22,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user, clearUser } = useContext(UserContext);
   return (
-    <header className="sticky top-0 z-50 backdrop-blur bg-white border-b border-gray-200">
+    <header className="sticky top-0 z-50 backdrop-blur bg-white border-b border-gray-200 w-full">
       <div className="flex items-center justify-between max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
         <Link to="/dashboard" className="text-xl font-bold">
           PrepTrack
@@ -53,8 +53,6 @@ const Navbar = () => {
             </button>
           )}
         </div>
-
-        {/* Mobile navigation */}
 
         <div className="md:hidden">
           <button

@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { axiosInstance } from "../utils/axiosInstance";
 import { UserContext } from "../context/userContext";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
   const { user } = useContext(UserContext);
@@ -76,8 +77,9 @@ const Dashboard = () => {
             {data.recentItems.map((item) => (
               <div
                 key={item._id}
-                className="flex justify-between items-center border border-gray-200 rounded-lg p-4 hover:shadow-sm transition"
+                className=" border border-gray-200 rounded-lg p-4 hover:shadow-sm transition"
               >
+                <Link to={`/items/${item._id}`} className="flex items-center justify-between">
                 <div>
                   <p className="font-medium text-gray-800">{item.title}</p>
                   <p className="text-sm text-gray-500">
@@ -96,6 +98,7 @@ const Dashboard = () => {
                 >
                   {item.status}
                 </span>
+                </Link>
               </div>
             ))}
           </div>

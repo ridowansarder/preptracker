@@ -98,3 +98,13 @@ export const updateItem = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const getItem = async (req, res) => {
+  try {
+    const item = await itemModel.findOne({ _id: req.params.id, userId: req.user.id });
+    if (!item) return res.status(404).json({ success: false, message: "Item not found" });
+    res.status(200).json({ success: true, item });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
