@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const axiosInstance = axios.create({
-  baseURL: "https://preptracker-9tuc.onrender.com/api/v1",
+  baseURL: "https://preptracker-jpu2.onrender.com/api/v1",
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
