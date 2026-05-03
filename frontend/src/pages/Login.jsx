@@ -9,38 +9,48 @@ const Login = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const { updateUser } = useContext(UserContext);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
 
-  try {
-    const response = await axiosInstance.post("/auth/login", { email, password });
+    try {
+      const response = await axiosInstance.post("/auth/login", {
+        email,
+        password,
+      });
 
-    const { token, user } = response.data;
+      const { token, user } = response.data;
 
-    if (token) {
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
+      if (token) {
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(user));
 
-      updateUser(user);
-      navigate("/dashboard");
+        updateUser(user);
+        navigate("/dashboard");
 
-      setEmail("");
-      setPassword("");
+        setEmail("");
+        setPassword("");
+      }
+    } catch (error) {
+      if (error.response && error.response.data.message) {
+        setError(error.response.data.message);
+      } else {
+        setError("Login failed. Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    if (error.response && error.response.data.message) {
-      setError(error.response.data.message);
-    } else {
-      setError("Login failed. Please try again.");
-    }
-  }
-};
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-xl sm:text-2xl font-bold mb-2 text-gray-800">Welcome Back!</h2>
+        <h2 className="text-xl sm:text-2xl font-bold mb-2 text-gray-800">
+          Welcome Back!
+        </h2>
         <p className="text-gray-600 mb-6">Please log in to your account.</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -81,9 +91,10 @@ const Login = () => {
           )}
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer"
+            className={`w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+            disabled={loading}
           >
-            Log In
+            {loading ? "Logging in..." : "Login"}
           </button>
 
           <p className="text-center mt-4">

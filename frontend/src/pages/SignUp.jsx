@@ -10,9 +10,11 @@ const SignUp = () => {
   const [error, setError] = useState(null);
   const { updateUser } = useContext(UserContext);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     setError(null);
 
     if (password !== confirmPassword) {
@@ -135,9 +137,10 @@ const SignUp = () => {
 
           <button
             type="submit"
-            className="w-full cursor-pointer bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+            className={`w-full cursor-pointer bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+            disabled={loading}
           >
-            Sign Up
+            {loading ? "Loading..." : "Sign Up"}
           </button>
 
           <p className="text-center mt-4">
