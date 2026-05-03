@@ -54,6 +54,8 @@ const SignUp = () => {
       } else {
         setError("Sign up failed. Please try again.");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
