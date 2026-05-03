@@ -14,7 +14,6 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError(null);
 
     if (password !== confirmPassword) {
@@ -26,6 +25,7 @@ const SignUp = () => {
       setError("Password must be at least 6 characters long");
       return;
     }
+    setLoading(true);
 
     try {
       const response = await axiosInstance.post("/auth/register", {
